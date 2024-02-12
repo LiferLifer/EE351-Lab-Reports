@@ -1,0 +1,26 @@
+sort_file:
+	@echo "Listing files/directories by file size:"
+	@ls -lhS
+
+find_log:
+	@echo "Searching for log files in your home directory:"
+	@find ~/ -type f -name "*.log"
+
+delete_lock_file:
+	@echo "Searching for lock files in your home directory:"
+	@lock_files=$$(find ~/ -type f -name "*.lock"); \
+	if [ -n "$$lock_files" ]; then \
+	    echo "Found the following lock files:"; \
+	    echo "$$lock_files"; \
+	    read -p "Do you want to delete these lock files? (y/n) " confirm; \
+	    if [ "$$confirm" = "y" ]; then \
+	        echo "$$lock_files" | xargs -d '\n' rm -f; \
+	        echo "Lock files deleted."; \
+	    else \
+	        echo "Lock files not deleted."; \
+	    fi; \
+	else \
+	    echo "No lock files found."; \
+	fi
+
+.PHONY: sort_file find_log delete_lock_file
