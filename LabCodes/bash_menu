@@ -1,0 +1,103 @@
+#!/bin/bash
+
+while true; do
+    # 显示菜单
+    echo "-------------------------------------------------------------"
+    echo "+                          Menu                             +"
+    echo "-------------------------------------------------------------"
+    echo "a. List all files in the present working directory"
+    echo "b. Display today's date and time"
+    echo "c. Display whether a file is a 'simple' file or a 'directory'"
+    echo "d. Create a backup for a file"
+    echo "e. Start an ftp session"
+    echo "f. Start your LED control program"
+    echo "u. User management"
+    echo "n. Network information"
+    echo "s. System information"
+    echo "x. Exit"
+
+    echo "-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-"
+    # 提示用户输入选项
+    read -p "[!] Enter your choice: " choice
+    
+    case $choice in
+        a)
+            # 选项 (a) - 列出当前工作目录中的所有文件
+            ls -l
+            ;;
+        b)
+            # 选项 (b) - 显示今天的日期和时间
+            date
+            ;;
+        c)
+            # 选项 (c) - 显示文件类型（"simple" 或 "directory"）
+            read -p "Plz enter the file name: " file
+            if [ -f "$file" ]; then
+                echo "$file is a 'simple' file."
+            elif [ -d "$file" ]; then
+                echo "$file is a 'directory'."
+            else
+                echo "$file does not exist or is of an unknown type."
+            fi
+            ;;
+        d)
+            # 选项 (d) - 为文件创建备份
+            read -p "Enter the file name to backup: " file
+            if [ -f "$file" ]; then
+                cp "$file" "${file}_backup"
+                echo "Backup of $file created as ${file}_backup."
+            else
+                echo "File $file does not exist."
+            fi
+            ;;
+        e)
+            # 选项 (e) - 启动ftp会话
+            read -p "Plz enter the IP address: " ftp_server
+            ftp "$ftp_server"
+            ;;
+        f)
+            # 选项 (f) - 启动LED控制程序
+            echo "Starting LED control program..."
+             python3 ./lab3.py
+            ;;
+        u)
+            # 选项 (u) - 用户管理
+            read -p "Enter username to create or manage: " username
+            read -p "Select action (create/delete/change_password): " action
+            case $action in
+                create)
+                    sudo adduser $username
+                    ;;
+                delete)
+                    sudo deluser $username
+                    ;;
+                change_password)
+                    sudo passwd $username
+                    ;;
+                *)
+                    echo "Invalid user management action."
+                    ;;
+            esac
+            ;;
+        n)
+            # 选项 (n) - 网络信息查询
+            echo "Network information:"
+            ifconfig
+            ;;
+        s)
+            # 选项 (s) - 系统信息查询
+            echo "System information:"
+            uname -a
+            df -h
+            ;;
+        x)
+            # 选项 (x) - 退出
+            echo "Goodbye!"
+            exit 0
+            ;;
+        *)
+            # 处理无效选项
+            echo "Invalid option. Please select a valid option."
+            ;;
+    esac
+done
